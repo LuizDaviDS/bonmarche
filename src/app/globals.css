@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #fff8eb;
+  --color-paper: #fffdf8;
+  --color-ink: #261d29;
+  --color-muted: #716876;
+  --color-plum: #702783;
+  --color-plum-dark: #4b175d;
+  --color-plum-soft: #f3e8f5;
+  --color-sun: #f1d34a;
+  --color-sun-soft: #fff0a8;
+  --color-line: #e9e1e9;
+  --color-good: #2f7254;
+  --color-alert: #94323c;
+  --font-serif: Georgia, "Times New Roman", serif;
+}
+
+@layer base {
+  button:not(:disabled) {
+    cursor: pointer;
+    transition-property:
+      color, background-color, border-color, box-shadow, opacity;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
+
+  button:not(:disabled):hover {
+    filter: brightness(0.97);
+  }
+
+  button:not(:disabled):active {
+    filter: brightness(0.92);
+  }
+
+  a[href] {
+    cursor: pointer;
+    transition-property: color, background-color, opacity;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
+
+  a[href]:active {
+    opacity: 0.85;
+  }
+
+  button:focus-visible,
+  a[href]:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid color-mix(in srgb, #702783 60%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

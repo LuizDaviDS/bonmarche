@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Planejamento das telas públicas e administrativas do Bonmarché."
+    />
+    <title>Bonmarché · Planejamento de telas</title>
+    <link rel="stylesheet" href="/canvas.css" />
+    <script src="/canvas.js" defer></script>
+  </head>
+  <body>
+    <main class="planner">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">BONMARCHÉ · FASE DE PLANEJAMENTO</p>
+          <h1>Mapa de telas</h1>
+          <p class="subtitle">
+            Uma proposta enxuta para validar antes de implementar interfaces.
+          </p>
+        </div>
+        <span class="review-badge">Direção visual aprovada</span>
+      </header>
+
+      <section class="direction" aria-label="Direção visual aprovada">
+        <div class="logo-mark">
+          <img src="/bonmarche-logo.png" alt="Logotipo original Bonmarché" />
+        </div>
+        <div class="direction-copy">
+          <p class="eyebrow">DIREÇÃO VISUAL APROVADA</p>
+          <h2>Contemporânea, apetitosa e com calor artesanal</h2>
+          <p>
+            Preservar o logotipo e a paleta. Fotografias dos lanches e títulos
+            expressivos dão apetite; papel quente, textura sutil e detalhes
+            feitos à mão trazem o acolhimento de uma lanchonete de bairro.
+          </p>
+          <div class="swatches" aria-label="Paleta de referência">
+            <span class="swatch purple">Roxo</span>
+            <span class="swatch yellow">Amarelo</span>
+            <span class="swatch cream">Creme</span>
+            <span class="swatch ink">Texto</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="Prévia das telas">
+        <aside class="screen-nav">
+          <div class="nav-heading">
+            <h2>Telas</h2>
+            <span id="screen-count" class="count"></span>
+          </div>
+          <div id="screen-list" class="screen-list" role="group" aria-label="Selecionar tela"></div>
+          <p class="nav-note">
+            Estados de carregamento, vazio, sucesso e erro aparecem junto à
+            tela correspondente; não são páginas separadas.
+          </p>
+        </aside>
+
+        <section class="preview-panel">
+          <div class="preview-toolbar">
+            <div>
+              <p id="screen-group" class="eyebrow"></p>
+              <h2 id="screen-title"></h2>
+            </div>
+            <div class="viewport-control" role="group" aria-label="Tamanho da prévia">
+              <button type="button" class="viewport-button" data-viewport="mobile" aria-pressed="true">
+                Celular
+              </button>
+              <button type="button" class="viewport-button" data-viewport="desktop" aria-pressed="false">
+                Desktop
+              </button>
+            </div>
+          </div>
+          <p id="screen-purpose" class="screen-purpose"></p>
+          <div id="screen-states" class="state-list" aria-label="Estados previstos"></div>
+          <div id="preview-tests" class="preview-tests" role="group" aria-label="Testar estados da prévia" hidden>
+            <span>Prévia interativa:</span>
+            <button type="button" class="notification-test-button" data-loading aria-pressed="false">
+              Simular carregamento
+            </button>
+            <button type="button" class="notification-test-button success" data-notification="success">
+              Testar sucesso
+            </button>
+            <button type="button" class="notification-test-button error" data-notification="error">
+              Testar erro
+            </button>
+          </div>
+          <div class="device-stage">
+            <div id="mock-screen" class="mock-screen"></div>
+          </div>
+          <p id="preview-status" class="sr-only" aria-live="polite"></p>
+        </section>
+      </section>
+
+      <footer class="scope-note">
+        <div>
+          <p class="eyebrow">FORA DESTA FASE</p>
+          <p>Carrinho, pedidos online e pagamento online não fazem parte do escopo.</p>
+        </div>
+        <p class="footer-caption">
+          Planejamento visual · Cardápio público + painel de administrador único
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>
