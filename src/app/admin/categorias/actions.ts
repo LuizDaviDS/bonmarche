@@ -175,7 +175,7 @@ export async function hardDeleteCategoryAction(
   }
 
   const supabase = await createClient();
-  const { data: mediaPaths, error } = await supabase.rpc(
+  const { data: rpcMediaPaths, error } = await supabase.rpc(
     "admin_delete_category",
     {
       p_category_id: parsed.data.id,
@@ -187,12 +187,90 @@ export async function hardDeleteCategoryAction(
     },
   );
 
-  if (error || !Array.isArray(mediaPaths)) {
+  let mediaPaths: string[] | null = Array.isArray(rpcMediaPaths)
+    ? rpcMediaPaths.filter(
+        (path): path is string => typeof path === "string",
+      )
+    : null;
+
+  if (error) {
+    const missingDeleteFunction =
+      error.code === "42883" || error.code === "PGRST202";
+
+    if (!missingDeleteFunction) {
+      console.error("Falha na RPC de exclusão de categoria.", {
+        code: error.code,
+        message: error.message,
+      });
+      return result(
+        "error",
+        "Não foi possível excluir a categoria. Ela e seus produtos foram mantidos.",
+      );
+    }
+
+    const [categoryCheck, productCheck] = await Promise.all([
+      supabase
+        .from("categories")
+        .select("image_path")
+        .eq("id", parsed.data.id)
+        .maybeSingle(),
+      supabase
+        .from("products")
+        .select("id")
+        .eq("category_id", parsed.data.id)
+        .limit(1),
+    ]);
+
+    if (categoryCheck.error || productCheck.error) {
+      console.error("Falha ao verificar categoria antes da exclusão.", {
+        categoryCode: categoryCheck.error?.code,
+        productCode: productCheck.error?.code,
+      });
+      return result(
+        "error",
+        "Não foi possível verificar se a categoria está vazia. Ela foi mantida.",
+      );
+    }
+
+    if (!categoryCheck.data) {
+      return result("error", "A categoria não foi encontrada.");
+    }
+
+    if (productCheck.data.length > 0) {
+      return result(
+        "error",
+        "A migração de exclusão de categorias não está disponível. A categoria ainda tem produtos e foi mantida.",
+      );
+    }
+
+    const { data: deletedCategory, error: deleteError } = await supabase
+      .from("categories")
+      .delete()
+      .eq("id", parsed.data.id)
+      .select("id")
+      .maybeSingle();
+
+    if (deleteError || !deletedCategory) {
+      console.error("Falha na exclusão direta de categoria vazia.", {
+        code: deleteError?.code,
+        message: deleteError?.message,
+      });
+      return result(
+        "error",
+        "Não foi possível excluir a categoria. Ela e seus produtos foram mantidos.",
+      );
+    }
+
+    mediaPaths = categoryCheck.data.image_path
+      ? [categoryCheck.data.image_path]
+      : [];
+  }
+
+  if (!mediaPaths) {
+    console.error("A RPC de exclusão de categoria retornou dados inválidos.");
     return result(
       "error",
-      error?.code === "42883"
-        ? "A migração de exclusão atômica de categorias ainda não foi aplicada."
-        : "Não foi possível excluir a categoria. Ela e seus produtos foram mantidos.",
+      "Não foi possível excluir a categoria. Ela e seus produtos foram mantidos.",
     );
   }
 
@@ -201,7 +279,7 @@ export async function hardDeleteCategoryAction(
   revalidatePath("/");
 
   const cleanupResults = await Promise.all(
-    [...new Set((mediaPaths as string[]).filter(Boolean))].map((path) =>
+    [...new Set(mediaPaths.filter(Boolean))].map((path) =>
       removeMediaIfUnused(supabase, path),
     ),
   );

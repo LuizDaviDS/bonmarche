@@ -6,7 +6,6 @@ import { requireAdmin } from "@/lib/auth/admin";
 import { createClient } from "@/lib/supabase/server";
 
 async function AdminDashboardContent() {
-  await requireAdmin();
   const supabase = await createClient();
   const [categoriesResult, productsResult] = await Promise.all([
     supabase
@@ -172,7 +171,9 @@ async function AdminDashboardContent() {
   );
 }
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  await requireAdmin();
+
   return (
     <AdminShell>
       <Suspense

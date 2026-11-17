@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ActionForm, ConfirmAction } from "@/app/admin/admin-ui";
 import { AdminShell } from "@/app/admin/admin-shell";
-import { requireAdmin } from "@/lib/auth/admin";
 import { createClient } from "@/lib/supabase/server";
 import {
   deleteProductAction,
@@ -179,7 +178,6 @@ function ProductSection({
 }
 
 export default async function ProductsPage() {
-  await requireAdmin();
   const supabase = await createClient();
   const [productsResult, categoriesResult] = await Promise.all([
     supabase

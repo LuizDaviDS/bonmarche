@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ActionForm } from "@/app/admin/admin-ui";
 import { AdminShell } from "@/app/admin/admin-shell";
-import { requireAdmin } from "@/lib/auth/admin";
 import { createClient } from "@/lib/supabase/server";
 import { setCategoryArchivedAction } from "./actions";
 
@@ -80,7 +79,6 @@ export default async function CategoriesPage({
 }: {
   searchParams: Promise<{ excluida?: string; imagens?: string }>;
 }) {
-  await requireAdmin();
   const notice = await searchParams;
   const supabase = await createClient();
   const [categoriesResult, productsResult] = await Promise.all([

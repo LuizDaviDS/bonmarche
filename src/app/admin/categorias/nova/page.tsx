@@ -1,11 +1,8 @@
 import Link from "next/link";
 import { AdminShell } from "@/app/admin/admin-shell";
-import { requireAdmin } from "@/lib/auth/admin";
 import { CategoryForm } from "../category-form";
 
 export default async function NewCategoryPage() {
-  await requireAdmin();
-
   return (
     <AdminShell>
       <div className="mx-auto grid max-w-[700px] gap-4">

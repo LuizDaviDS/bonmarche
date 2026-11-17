@@ -1,5 +1,4 @@
 import { AdminShell } from "@/app/admin/admin-shell";
-import { requireAdmin } from "@/lib/auth/admin";
 import { createClient } from "@/lib/supabase/server";
 import {
   SettingsForm,
@@ -7,7 +6,6 @@ import {
 } from "./settings-form";
 
 export default async function SettingsPage() {
-  await requireAdmin();
   const supabase = await createClient();
   const { data: settings, error } = await supabase
     .from("store_settings")

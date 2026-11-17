@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { AdminShell } from "@/app/admin/admin-shell";
-import { requireAdmin } from "@/lib/auth/admin";
 import { createClient } from "@/lib/supabase/server";
 import { ProductForm } from "../product-form";
 
@@ -11,7 +10,6 @@ type CategoryOption = {
 };
 
 export default async function NewProductPage() {
-  await requireAdmin();
   const supabase = await createClient();
   const { data: categories, error } = await supabase
     .from("categories")
