@@ -23,13 +23,6 @@ const screens = [
     states: ["Erro de credenciais", "Enviando"],
   },
   {
-    id: "recovery",
-    group: "Acesso",
-    name: "Recuperação de senha",
-    purpose: "Solicitar e concluir a redefinição segura da senha.",
-    states: ["Enviando", "Link expirado", "Sucesso"],
-  },
-  {
     id: "dashboard",
     group: "Administração",
     name: "Início do painel",

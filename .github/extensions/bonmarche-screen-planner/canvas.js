@@ -16,14 +16,6 @@ const screens = [
     render: loginScreen,
   },
   {
-    id: "recovery",
-    group: "Acesso",
-    name: "Recuperação de senha",
-    purpose: "Solicitar o link e definir uma nova senha em um fluxo seguro.",
-    states: ["Enviando", "Link expirado ou usado", "Senha alterada"],
-    render: recoveryScreen,
-  },
-  {
     id: "dashboard",
     group: "Administração",
     name: "Início do painel",
@@ -463,11 +455,7 @@ function menuScreen() {
 }
 
 function loginScreen() {
-  return `<div>${mockHeader("Entrar")}<div class="mock-body"><div class="mock-hero login-hero"><div class="login-hero-title"><h3>Bem-vindo</h3><p class="eyebrow">ÁREA RESTRITA</p></div><p class="login-hero-description">Acesso somente para a pessoa administradora.</p></div><div class="mock-form">${field("E-mail", "seu@email.com")}${field("Senha", "••••••••")}<span class="mock-action">Entrar no painel</span><span class="mock-link">Esqueci minha senha</span></div><div class="mock-footer">Sem cadastro público. Mensagens de erro aparecem junto ao formulário.</div></div></div>`;
-}
-
-function recoveryScreen() {
-  return `<div>${mockHeader("Recuperar senha")}<div class="mock-body recovery-body"><div class="mock-section-title"><h3>Redefinir senha</h3></div><p class="mock-label">Solicitar link de recuperação pelo e-mail administrativo; o formulário não revela se um endereço está cadastrado.</p><div class="mock-form">${field("E-mail da conta", "seu@email.com")}<span class="mock-action">Enviar link seguro</span><div class="mock-alert">Etapa seguinte: link válido abre a definição de nova senha. Link expirado ou já usado mostra como solicitar outro.</div>${field("Nova senha", "Pelo menos 8 caracteres")}${field("Confirmar nova senha", "Repita a nova senha")}<span class="mock-action">Salvar nova senha</span></div></div></div>`;
+  return `<div>${mockHeader("Entrar")}<div class="mock-body"><div class="mock-hero login-hero"><div class="login-hero-title"><h3>Bem-vindo</h3><p class="eyebrow">ÁREA RESTRITA</p></div><p class="login-hero-description">Acesso somente para a pessoa administradora.</p></div><div class="mock-form">${field("E-mail", "seu@email.com")}${field("Senha", "••••••••")}<span class="mock-action">Entrar no painel</span></div><div class="mock-footer">Sem cadastro público. Mensagens de erro aparecem junto ao formulário.</div></div></div>`;
 }
 
 function dashboardScreen() {

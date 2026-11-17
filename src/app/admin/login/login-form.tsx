@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState } from "react";
 import { signInAction, type LoginState } from "../actions";
 
@@ -65,12 +64,6 @@ export function LoginForm() {
       >
         {pending ? "Entrando..." : "Entrar no painel"}
       </button>
-      <Link
-        className="flex min-h-11 items-center justify-center px-2 text-center text-sm font-bold text-plum-dark underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum/50"
-        href="/admin/esqueci-senha"
-      >
-        Esqueci minha senha
-      </Link>
     </form>
   );
 }

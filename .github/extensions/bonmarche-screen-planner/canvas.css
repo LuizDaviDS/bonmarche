@@ -313,15 +313,10 @@ h2 { margin-bottom: 0; letter-spacing: -0.025em; }
 .product-delete-dialog button { cursor: pointer; }
 .category-form-save { border: 0; cursor: pointer; }
 .mock-footer { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 11px; color: var(--muted); font-size: 8px; line-height: 1.45; }
-.recovery-body > .mock-section-title { justify-content: center; }
-.recovery-body > .mock-label { max-width: 62ch; margin-right: auto; margin-left: auto; text-align: center; }
 
 @container (min-width: 760px) {
   .mock-screen.desktop .mock-body { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; align-items: start; padding: 21px; }
   .mock-screen.desktop .loading-menu { grid-column: 1 / -1; }
-  .mock-screen.desktop .recovery-body { display: block; }
-  .mock-screen.desktop .recovery-body > .mock-label { text-align: center; }
-  .mock-screen.desktop .recovery-body .mock-form { width: min(100%, 480px); margin: 14px auto 0; }
   .mock-screen.desktop .mock-hero { grid-column: 1; grid-row: 1; min-height: 170px; }
   .mock-screen.desktop .mock-featured { grid-column: 1; grid-row: 2; }
   .mock-screen.desktop .mock-featured > .mock-section-title:first-child { margin-top: 0; }
@@ -393,8 +388,6 @@ h2 { margin-bottom: 0; letter-spacing: -0.025em; }
   .login-hero h3 { font-size: 26px; white-space: normal; }
   .login-hero .eyebrow { font-size: 12px; }
   .mock-hero .login-hero-description { grid-column: 1; align-self: start; justify-self: start; max-width: 32ch; text-align: left; font-size: 14px; line-height: 1.5; }
-  .recovery-body > .mock-label { font-size: 14px; line-height: 1.5; }
-  .recovery-body .mock-section-title h3 { font-size: 22px; }
   .management-heading { align-items: center; }
   .management-heading h3 { font-size: 19px; }
   .management-section h4 { font-size: 14px; }

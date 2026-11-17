@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { PasswordForm } from "./password-form";
 import { AccessShell } from "../access-shell";
 
@@ -12,12 +11,6 @@ export default function ResetPasswordPage() {
           administrativo.
         </p>
         <PasswordForm />
-        <Link
-          className="mt-3.5 flex min-h-11 items-center justify-center px-2 text-center text-sm font-bold text-plum-dark underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum/50"
-          href="/admin/esqueci-senha"
-        >
-          Solicitar outro link
-        </Link>
       </main>
     </AccessShell>
   );
