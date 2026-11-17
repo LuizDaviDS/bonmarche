@@ -7,15 +7,14 @@ Cardápio online com painel administrativo, desenvolvido com Next.js e Supabase.
 1. Instale as dependências com `npm install`.
 2. Copie `.env.example` para `.env.local`.
 3. Preencha `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` com os valores do projeto Supabase. Não use uma chave `secret` ou `service_role`.
-4. No Supabase, em **Authentication → URL Configuration**, mantenha `http://localhost:3000` como Site URL e adicione `http://localhost:3000/admin/redefinir-senha` às Redirect URLs para links de redefinição enviados pelo responsável do projeto.
-5. Inicie a aplicação com `npm run dev` e abra http://localhost:3000.
+4. Inicie a aplicação com `npm run dev` e abra http://localhost:3000.
 
 O arquivo `.env.local` contém configuração local e não deve ser enviado ao GitHub.
 
 ## Acesso administrativo
 
 - Login local: http://localhost:3000/admin/login.
-- O painel não oferece solicitação de recuperação de senha. Se necessário, o responsável do projeto pode enviar um link pelo Supabase Auth; o retorno usa `/admin/redefinir-senha`.
+- O painel não oferece recuperação de senha; as rotas `/admin/esqueci-senha` e `/admin/redefinir-senha` não estão disponíveis.
 
 ## Comandos
 
