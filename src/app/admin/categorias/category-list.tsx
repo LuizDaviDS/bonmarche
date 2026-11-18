@@ -17,6 +17,8 @@ type AdminCategory = {
 const fieldClass =
   "mt-1 min-h-11 w-full rounded-lg border border-line bg-white px-3 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum/50";
 
+type CategorySort = "menu" | "name-asc" | "name-desc";
+
 function normalizeSearchText(value: string) {
   return value
     .normalize("NFD")
@@ -91,6 +93,7 @@ export function CategoryList({
 }) {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | "active" | "archived">("all");
+  const [sortBy, setSortBy] = useState<CategorySort>("menu");
   const normalizedSearch = normalizeSearchText(search.trim());
   const filteredCategories = categories.filter((category) => {
     const archived = Boolean(category.archived_at);
@@ -105,15 +108,27 @@ export function CategoryList({
       (status === "archived" && archived);
     return matchesSearch && matchesStatus;
   });
-  const active = filteredCategories.filter(
-    (category) => !category.archived_at,
+  const sortCategories = (items: AdminCategory[]) => {
+    if (sortBy === "menu") return items;
+
+    return [...items].sort((a, b) => {
+      const byName = a.name.localeCompare(b.name, "pt-BR", {
+        sensitivity: "base",
+      });
+      return sortBy === "name-asc" ? byName : -byName;
+    });
+  };
+  const active = sortCategories(
+    filteredCategories.filter((category) => !category.archived_at),
   );
-  const archived = filteredCategories.filter((category) => category.archived_at);
+  const archived = sortCategories(
+    filteredCategories.filter((category) => category.archived_at),
+  );
   const hasFilters = Boolean(search.trim()) || status !== "all";
 
   return (
     <div className="grid gap-5">
-      <div className="grid gap-3 rounded-xl border border-line bg-white p-3 sm:grid-cols-[minmax(0,1fr)_minmax(220px,0.5fr)] sm:p-4">
+      <div className="grid gap-3 rounded-xl border border-line bg-white p-3 sm:grid-cols-[minmax(0,1fr)_minmax(220px,0.5fr)_minmax(220px,0.5fr)] sm:p-4">
         <label className="text-sm font-bold text-ink">
           Buscar categoria
           <input
@@ -139,7 +154,21 @@ export function CategoryList({
             <option value="archived">Arquivadas</option>
           </select>
         </label>
-        <p className="m-0 text-xs text-muted sm:col-span-2" role="status">
+        <label className="text-sm font-bold text-ink">
+          Ordenar por
+          <select
+            className={fieldClass}
+            value={sortBy}
+            onChange={(event) =>
+              setSortBy(event.currentTarget.value as CategorySort)
+            }
+          >
+            <option value="menu">Ordem do cardápio</option>
+            <option value="name-asc">Nome: A a Z</option>
+            <option value="name-desc">Nome: Z a A</option>
+          </select>
+        </label>
+        <p className="m-0 text-xs text-muted sm:col-span-3" role="status">
           {filteredCategories.length}{" "}
           {filteredCategories.length === 1
             ? "categoria encontrada"
