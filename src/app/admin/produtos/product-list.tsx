@@ -40,11 +40,11 @@ type ProductSort =
   | "menu"
   | "name-asc"
   | "name-desc"
-  | "price-asc"
   | "price-desc";
 
 const fieldClass =
   "mt-1 min-h-11 w-full rounded-lg border border-line bg-white px-3 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum/50";
+const PRODUCTS_PER_PAGE = 16;
 
 function normalizeSearchText(value: string) {
   return value
@@ -221,6 +221,7 @@ export function ProductList({
   const [categoryId, setCategoryId] = useState("all");
   const [status, setStatus] = useState<ProductStatus>("all");
   const [sortBy, setSortBy] = useState<ProductSort>("menu");
+  const [currentPage, setCurrentPage] = useState(1);
   const categoryNames = useMemo(
     () => new Map(categories.map((category) => [category.id, category.name])),
     [categories],
@@ -246,8 +247,6 @@ export function ProductList({
     return matchesSearch && matchesCategory && matchesStatus;
   });
   const sortProducts = (items: AdminProduct[]) => {
-    if (sortBy === "menu") return items;
-
     return [...items].sort((a, b) => {
       const byName = a.name.localeCompare(b.name, "pt-BR", {
         sensitivity: "base",
@@ -257,17 +256,34 @@ export function ProductList({
       if (sortBy === "name-desc") return -byName;
 
       const priceDifference =
-        sortBy === "price-asc"
-          ? Number(a.price) - Number(b.price)
-          : Number(b.price) - Number(a.price);
+        sortBy === "price-desc"
+          ? Number(b.price) - Number(a.price)
+          : Number(a.price) - Number(b.price);
       return priceDifference || byName;
     });
   };
-  const active = sortProducts(
+  const activeProducts = sortProducts(
     filteredProducts.filter((product) => !product.archived_at),
   );
-  const archived = sortProducts(
+  const archivedProducts = sortProducts(
     filteredProducts.filter((product) => product.archived_at),
+  );
+  const orderedProducts = [...activeProducts, ...archivedProducts];
+  const totalPages = Math.max(
+    1,
+    Math.ceil(orderedProducts.length / PRODUCTS_PER_PAGE),
+  );
+  const visiblePage = Math.min(currentPage, totalPages);
+  const pageStart = (visiblePage - 1) * PRODUCTS_PER_PAGE;
+  const pageProducts = orderedProducts.slice(
+    pageStart,
+    pageStart + PRODUCTS_PER_PAGE,
+  );
+  const active = pageProducts.filter((product) => !product.archived_at);
+  const archived = pageProducts.filter((product) => product.archived_at);
+  const pageEnd = Math.min(
+    pageStart + pageProducts.length,
+    orderedProducts.length,
   );
   const hasFilters = Boolean(search.trim()) || categoryId !== "all" || status !== "all";
 
@@ -280,7 +296,10 @@ export function ProductList({
             className={fieldClass}
             type="search"
             value={search}
-            onChange={(event) => setSearch(event.currentTarget.value)}
+            onChange={(event) => {
+              setSearch(event.currentTarget.value);
+              setCurrentPage(1);
+            }}
             placeholder="Nome, descrição ou categoria"
             autoComplete="off"
           />
@@ -290,7 +309,10 @@ export function ProductList({
           <select
             className={fieldClass}
             value={categoryId}
-            onChange={(event) => setCategoryId(event.currentTarget.value)}
+            onChange={(event) => {
+              setCategoryId(event.currentTarget.value);
+              setCurrentPage(1);
+            }}
           >
             <option value="all">Todas as categorias</option>
             {categories.map((category) => (
@@ -305,9 +327,10 @@ export function ProductList({
           <select
             className={fieldClass}
             value={status}
-            onChange={(event) =>
-              setStatus(event.currentTarget.value as ProductStatus)
-            }
+            onChange={(event) => {
+              setStatus(event.currentTarget.value as ProductStatus);
+              setCurrentPage(1);
+            }}
           >
             <option value="all">Todos os produtos</option>
             <option value="active">Ativos</option>
@@ -322,22 +345,21 @@ export function ProductList({
           <select
             className={fieldClass}
             value={sortBy}
-            onChange={(event) =>
-              setSortBy(event.currentTarget.value as ProductSort)
-            }
+            onChange={(event) => {
+              setSortBy(event.currentTarget.value as ProductSort);
+              setCurrentPage(1);
+            }}
           >
-            <option value="menu">Ordem do cardápio</option>
+            <option value="menu">Ordem do cardápio (preço crescente)</option>
             <option value="name-asc">Nome: A a Z</option>
             <option value="name-desc">Nome: Z a A</option>
-            <option value="price-asc">Preço: menor para maior</option>
             <option value="price-desc">Preço: maior para menor</option>
           </select>
         </label>
         <p className="m-0 text-xs text-muted sm:col-span-4" role="status">
-          {filteredProducts.length}{" "}
-          {filteredProducts.length === 1
-            ? "produto encontrado"
-            : "produtos encontrados"}
+          {orderedProducts.length === 0
+            ? "Nenhum produto encontrado"
+            : `Exibindo ${pageStart + 1}–${pageEnd} de ${orderedProducts.length} produtos`}
         </p>
       </div>
 
@@ -364,6 +386,36 @@ export function ProductList({
           emptyMessage="Nenhum produto arquivado."
           description="Itens arquivados ficam ocultos no cardápio, mas podem ser restaurados."
         />
+      ) : null}
+      {totalPages > 1 ? (
+        <nav
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-white p-3"
+          aria-label="Paginação dos produtos"
+        >
+          <button
+            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-line bg-white px-3 text-sm font-bold text-ink hover:bg-plum-soft disabled:cursor-not-allowed disabled:opacity-50"
+            type="button"
+            onClick={() => setCurrentPage(visiblePage - 1)}
+            disabled={visiblePage === 1}
+          >
+            Anterior
+          </button>
+          <span
+            className="text-sm font-bold text-muted"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            Página {visiblePage} de {totalPages}
+          </span>
+          <button
+            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-line bg-white px-3 text-sm font-bold text-ink hover:bg-plum-soft disabled:cursor-not-allowed disabled:opacity-50"
+            type="button"
+            onClick={() => setCurrentPage(visiblePage + 1)}
+            disabled={visiblePage === totalPages}
+          >
+            Próxima
+          </button>
+        </nav>
       ) : null}
     </div>
   );
