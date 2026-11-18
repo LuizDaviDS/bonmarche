@@ -36,6 +36,13 @@ type ProductStatus =
   | "unavailable"
   | "featured";
 
+type ProductSort =
+  | "menu"
+  | "name-asc"
+  | "name-desc"
+  | "price-asc"
+  | "price-desc";
+
 const fieldClass =
   "mt-1 min-h-11 w-full rounded-lg border border-line bg-white px-3 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum/50";
 
@@ -213,6 +220,7 @@ export function ProductList({
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState("all");
   const [status, setStatus] = useState<ProductStatus>("all");
+  const [sortBy, setSortBy] = useState<ProductSort>("menu");
   const categoryNames = useMemo(
     () => new Map(categories.map((category) => [category.id, category.name])),
     [categories],
@@ -237,13 +245,35 @@ export function ProductList({
 
     return matchesSearch && matchesCategory && matchesStatus;
   });
-  const active = filteredProducts.filter((product) => !product.archived_at);
-  const archived = filteredProducts.filter((product) => product.archived_at);
+  const sortProducts = (items: AdminProduct[]) => {
+    if (sortBy === "menu") return items;
+
+    return [...items].sort((a, b) => {
+      const byName = a.name.localeCompare(b.name, "pt-BR", {
+        sensitivity: "base",
+      });
+
+      if (sortBy === "name-asc") return byName;
+      if (sortBy === "name-desc") return -byName;
+
+      const priceDifference =
+        sortBy === "price-asc"
+          ? Number(a.price) - Number(b.price)
+          : Number(b.price) - Number(a.price);
+      return priceDifference || byName;
+    });
+  };
+  const active = sortProducts(
+    filteredProducts.filter((product) => !product.archived_at),
+  );
+  const archived = sortProducts(
+    filteredProducts.filter((product) => product.archived_at),
+  );
   const hasFilters = Boolean(search.trim()) || categoryId !== "all" || status !== "all";
 
   return (
     <div className="grid gap-5">
-      <div className="grid gap-3 rounded-xl border border-line bg-white p-3 sm:grid-cols-3 sm:p-4">
+      <div className="grid gap-3 rounded-xl border border-line bg-white p-3 sm:grid-cols-4 sm:p-4">
         <label className="text-sm font-bold text-ink">
           Buscar produto
           <input
@@ -287,7 +317,23 @@ export function ProductList({
             <option value="featured">Em destaque</option>
           </select>
         </label>
-        <p className="m-0 text-xs text-muted sm:col-span-3" role="status">
+        <label className="text-sm font-bold text-ink">
+          Ordenar por
+          <select
+            className={fieldClass}
+            value={sortBy}
+            onChange={(event) =>
+              setSortBy(event.currentTarget.value as ProductSort)
+            }
+          >
+            <option value="menu">Ordem do cardápio</option>
+            <option value="name-asc">Nome: A a Z</option>
+            <option value="name-desc">Nome: Z a A</option>
+            <option value="price-asc">Preço: menor para maior</option>
+            <option value="price-desc">Preço: maior para menor</option>
+          </select>
+        </label>
+        <p className="m-0 text-xs text-muted sm:col-span-4" role="status">
           {filteredProducts.length}{" "}
           {filteredProducts.length === 1
             ? "produto encontrado"
