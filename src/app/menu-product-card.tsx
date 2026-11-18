@@ -40,11 +40,9 @@ function ProductPlaceholder() {
 export function MenuProductCard({
   product,
   featured = false,
-  categoryName,
 }: {
   product: MenuProduct;
   featured?: boolean;
-  categoryName?: string;
 }) {
   const formattedPrice = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -73,11 +71,6 @@ export function MenuProductCard({
         )}
       </div>
       <div className="flex min-w-0 flex-1 flex-col items-start justify-center py-1 pr-1 max-sm:py-0.5 max-sm:pr-px">
-        {categoryName ? (
-          <span className="mb-1 inline-flex rounded-full border border-[#e6d8c8] bg-cream px-2 py-0.5 text-[10px] font-bold text-plum-dark max-sm:mb-0.5 max-sm:px-1.5 max-sm:text-[9px]">
-            {categoryName}
-          </span>
-        ) : null}
         {featured ? (
           <span className="mb-1.5 inline-flex rounded-full border border-[#d5b331] bg-sun-soft px-2 py-1 text-[11px] font-extrabold tracking-[0.06em] text-[#583f00] uppercase max-sm:mb-1 max-sm:px-1.5 max-sm:py-0.5 max-sm:text-[9px]">
             Mais pedido

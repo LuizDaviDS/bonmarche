@@ -83,13 +83,22 @@ async function getMenuData(): Promise<MenuData> {
 	}
 
 	const categoryIds = new Set(categories.map((category) => category.id));
+	const categoryPositions = new Map(
+		categories.map((category, index) => [category.id, index]),
+	);
 	const visibleProducts = products
 		.filter((product) => categoryIds.has(product.category_id))
-		.sort(
-			(a, b) =>
+		.sort((a, b) => {
+			const categoryDifference =
+				(categoryPositions.get(a.category_id) ?? 0) -
+				(categoryPositions.get(b.category_id) ?? 0);
+			if (categoryDifference !== 0) return categoryDifference;
+
+			return (
 				Number(a.price) - Number(b.price) ||
-				a.name.localeCompare(b.name, "pt-BR"),
-		);
+				a.name.localeCompare(b.name, "pt-BR")
+			);
+		});
 
 	return {
 		ok: true,
