@@ -66,7 +66,7 @@ export function MenuCatalog({
           type="search"
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
-          placeholder="Ex.: pão de queijo"
+          placeholder="Pesquisar no cardápio"
           autoComplete="off"
         />
       </label>
