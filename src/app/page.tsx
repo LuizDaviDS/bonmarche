@@ -63,7 +63,7 @@ async function getMenuData(): Promise<MenuData> {
 				"id, category_id, name, description, price, image_path, available, featured, sort_order",
 			)
 			.is("archived_at", null)
-			.order("sort_order", { ascending: true })
+			.order("price", { ascending: true })
 			.order("name", { ascending: true })
 			.returns<MenuProductRecord[]>(),
 	]);
@@ -83,9 +83,13 @@ async function getMenuData(): Promise<MenuData> {
 	}
 
 	const categoryIds = new Set(categories.map((category) => category.id));
-	const visibleProducts = products.filter((product) =>
-		categoryIds.has(product.category_id),
-	);
+	const visibleProducts = products
+		.filter((product) => categoryIds.has(product.category_id))
+		.sort(
+			(a, b) =>
+				Number(a.price) - Number(b.price) ||
+				a.name.localeCompare(b.name, "pt-BR"),
+		);
 
 	return {
 		ok: true,
