@@ -3,6 +3,13 @@
 import { useState } from "react";
 import { MenuProductCard, type MenuProduct } from "./menu-product-card";
 
+function normalizeSearchText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("pt-BR");
+}
+
 type MenuCategory = {
   id: string;
   name: string;
@@ -21,12 +28,22 @@ export function MenuCatalog({
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null,
   );
+  const [search, setSearch] = useState("");
+  const normalizedSearch = normalizeSearchText(search.trim());
   const visibleCategories = selectedCategoryId
     ? categories.filter((category) => category.id === selectedCategoryId)
     : categories;
-  const visibleProducts = selectedCategoryId
-    ? products.filter((product) => product.category_id === selectedCategoryId)
-    : products;
+  const visibleProducts = products.filter((product) => {
+    const matchesCategory =
+      selectedCategoryId === null ||
+      product.category_id === selectedCategoryId;
+    const matchesSearch =
+      !normalizedSearch ||
+      normalizeSearchText(
+        `${product.name} ${product.description ?? ""}`,
+      ).includes(normalizedSearch);
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <section className="min-w-0" aria-labelledby="catalog-title">
@@ -38,6 +55,18 @@ export function MenuCatalog({
           Escolha seu momento
         </h2>
       </div>
+
+      <label className="mb-2 block text-sm font-bold text-plum-dark">
+        Buscar produto
+        <input
+          className="mt-1 min-h-11 w-full rounded-xl border border-[#e6d8c8] bg-paper px-3 text-sm font-normal text-ink placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum/50"
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.currentTarget.value)}
+          placeholder="Ex.: pão de queijo"
+          autoComplete="off"
+        />
+      </label>
 
       {categories.length > 0 ? (
         <>
@@ -80,62 +109,69 @@ export function MenuCatalog({
               role="status"
             >
               <h3 className="m-0 mb-1.5 font-serif text-lg max-sm:text-base">
-                {selectedCategoryId
-                  ? "Esta categoria ainda está sem produtos"
-                  : "O cardápio está ganhando forma"}
+                {search.trim()
+                  ? "Nenhum produto encontrado"
+                  : selectedCategoryId
+                    ? "Esta categoria ainda está sem produtos"
+                    : "O cardápio está ganhando forma"}
               </h3>
               <p className="m-0 max-w-[42ch] text-base leading-relaxed text-muted max-sm:text-sm">
-                {selectedCategoryId
-                  ? "Ainda não há produtos publicados nesta categoria."
-                  : "Ainda não há produtos publicados. Volte em breve para conhecer as opções."}
+                {search.trim()
+                  ? "Tente buscar por outro nome ou descrição, ou escolha outra categoria."
+                  : selectedCategoryId
+                    ? "Ainda não há produtos publicados nesta categoria."
+                    : "Ainda não há produtos publicados. Volte em breve para conhecer as opções."}
               </p>
             </div>
           ) : (
-            <div className="grid gap-5 max-sm:gap-4">
-              {visibleCategories.map((category) => {
-                const categoryProducts = products.filter(
-                  (product) => product.category_id === category.id,
-                );
+            <div className="mt-2 max-h-[min(58svh,42rem)] min-h-[10rem] overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable] max-sm:max-h-[45svh]">
+              <div className="grid gap-5 max-sm:gap-4">
+                {visibleCategories.map((category) => {
+                  const categoryProducts = visibleProducts.filter(
+                    (product) => product.category_id === category.id,
+                  );
 
-                return (
-                  <section
-                    className="scroll-mt-6"
-                    id={`category-${category.id}`}
-                    key={category.id}
-                    aria-labelledby={`category-title-${category.id}`}
-                  >
-                    <div className="mt-3 mb-2 flex items-start justify-between gap-3 border-b border-[#efe8de] pb-2">
-                      <div>
-                        <h3
-                          className="m-0 font-serif text-xl tracking-[-0.025em] text-plum-dark max-sm:text-lg"
-                          id={`category-title-${category.id}`}
-                        >
-                          {category.name}
-                        </h3>
-                        {category.description ? (
-                          <p className="mt-1 mb-0 text-base leading-relaxed text-muted max-sm:text-sm">
-                            {category.description}
-                          </p>
-                        ) : null}
+                  if (normalizedSearch && categoryProducts.length === 0) {
+                    return null;
+                  }
+
+                  return (
+                    <section
+                      className="scroll-mt-6"
+                      id={`category-${category.id}`}
+                      key={category.id}
+                      aria-labelledby={`category-title-${category.id}`}
+                    >
+                      <div className="mt-3 mb-2 flex items-start justify-between gap-3 border-b border-[#efe8de] pb-2">
+                        <div>
+                          <h3
+                            className="m-0 font-serif text-xl tracking-[-0.025em] text-plum-dark max-sm:text-lg"
+                            id={`category-title-${category.id}`}
+                          >
+                            {category.name}
+                          </h3>
+                          {category.description ? (
+                            <p className="mt-1 mb-0 text-base leading-relaxed text-muted max-sm:text-sm">
+                              {category.description}
+                            </p>
+                          ) : null}
+                        </div>
                       </div>
-                    </div>
-                    {categoryProducts.length > 0 ? (
-                      <div className="mt-2 grid gap-2.5 max-sm:gap-2">
-                        {categoryProducts.map((product) => (
-                          <MenuProductCard
-                            key={product.id}
-                            product={product}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="m-0 max-w-[42ch] rounded-xl bg-cream p-3 text-sm leading-relaxed text-muted">
-                        Ainda não há produtos publicados nesta categoria.
-                      </p>
-                    )}
-                  </section>
-                );
-              })}
+                      {categoryProducts.length > 0 ? (
+                        <div className="mt-2 grid gap-2.5 max-sm:gap-2">
+                          {categoryProducts.map((product) => (
+                            <MenuProductCard key={product.id} product={product} />
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="m-0 max-w-[42ch] rounded-xl bg-cream p-3 text-sm leading-relaxed text-muted">
+                          Ainda não há produtos publicados nesta categoria.
+                        </p>
+                      )}
+                    </section>
+                  );
+                })}
+              </div>
             </div>
           )}
         </>

@@ -245,7 +245,7 @@ export default async function Home() {
 								</div>
 							</div>
 							{featuredProducts.length > 0 ? (
-								<div className="mt-3 grid gap-3 max-sm:mt-2 max-sm:gap-2">
+								<div className="mt-3 grid max-h-[min(52svh,34rem)] gap-3 overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable] max-sm:mt-2 max-sm:max-h-[42svh] max-sm:gap-2">
 									{featuredProducts.map((product) => (
 										<MenuProductCard
 											key={product.id}
