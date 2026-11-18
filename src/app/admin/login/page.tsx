@@ -21,9 +21,6 @@ export default async function AdminLoginPage() {
           </p>
         </section>
         <LoginForm />
-        <p className="col-span-full mt-0 mb-0 border-t border-line pt-3 text-center text-xs leading-normal text-muted max-sm:col-span-1">
-          Sem cadastro público. Mensagens de erro aparecem junto ao formulário.
-        </p>
       </main>
     </AccessShell>
   );
