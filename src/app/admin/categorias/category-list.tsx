@@ -16,6 +16,7 @@ type AdminCategory = {
 
 const fieldClass =
   "mt-1 min-h-11 w-full rounded-lg border border-line bg-white px-3 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum/50";
+const CATEGORIES_PER_PAGE = 16;
 
 type CategorySort = "menu" | "name-asc" | "name-desc";
 
@@ -94,6 +95,7 @@ export function CategoryList({
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | "active" | "archived">("all");
   const [sortBy, setSortBy] = useState<CategorySort>("menu");
+  const [currentPage, setCurrentPage] = useState(1);
   const normalizedSearch = normalizeSearchText(search.trim());
   const filteredCategories = categories.filter((category) => {
     const archived = Boolean(category.archived_at);
@@ -118,11 +120,28 @@ export function CategoryList({
       return sortBy === "name-asc" ? byName : -byName;
     });
   };
-  const active = sortCategories(
+  const activeCategories = sortCategories(
     filteredCategories.filter((category) => !category.archived_at),
   );
-  const archived = sortCategories(
+  const archivedCategories = sortCategories(
     filteredCategories.filter((category) => category.archived_at),
+  );
+  const orderedCategories = [...activeCategories, ...archivedCategories];
+  const totalPages = Math.max(
+    1,
+    Math.ceil(orderedCategories.length / CATEGORIES_PER_PAGE),
+  );
+  const visiblePage = Math.min(currentPage, totalPages);
+  const pageStart = (visiblePage - 1) * CATEGORIES_PER_PAGE;
+  const pageCategories = orderedCategories.slice(
+    pageStart,
+    pageStart + CATEGORIES_PER_PAGE,
+  );
+  const active = pageCategories.filter((category) => !category.archived_at);
+  const archived = pageCategories.filter((category) => category.archived_at);
+  const pageEnd = Math.min(
+    pageStart + pageCategories.length,
+    orderedCategories.length,
   );
   const hasFilters = Boolean(search.trim()) || status !== "all";
 
@@ -135,7 +154,10 @@ export function CategoryList({
             className={fieldClass}
             type="search"
             value={search}
-            onChange={(event) => setSearch(event.currentTarget.value)}
+            onChange={(event) => {
+              setSearch(event.currentTarget.value);
+              setCurrentPage(1);
+            }}
             placeholder="Nome ou descrição"
             autoComplete="off"
           />
@@ -145,9 +167,10 @@ export function CategoryList({
           <select
             className={fieldClass}
             value={status}
-            onChange={(event) =>
-              setStatus(event.currentTarget.value as typeof status)
-            }
+            onChange={(event) => {
+              setStatus(event.currentTarget.value as typeof status);
+              setCurrentPage(1);
+            }}
           >
             <option value="all">Todas as categorias</option>
             <option value="active">Ativas</option>
@@ -159,9 +182,10 @@ export function CategoryList({
           <select
             className={fieldClass}
             value={sortBy}
-            onChange={(event) =>
-              setSortBy(event.currentTarget.value as CategorySort)
-            }
+            onChange={(event) => {
+              setSortBy(event.currentTarget.value as CategorySort);
+              setCurrentPage(1);
+            }}
           >
             <option value="menu">Ordem do cardápio</option>
             <option value="name-asc">Nome: A a Z</option>
@@ -169,10 +193,9 @@ export function CategoryList({
           </select>
         </label>
         <p className="m-0 text-xs text-muted sm:col-span-3" role="status">
-          {filteredCategories.length}{" "}
-          {filteredCategories.length === 1
-            ? "categoria encontrada"
-            : "categorias encontradas"}
+          {orderedCategories.length === 0
+            ? "Nenhuma categoria encontrada"
+            : `Exibindo ${pageStart + 1}–${pageEnd} de ${orderedCategories.length} categorias`}
         </p>
       </div>
 
@@ -219,6 +242,36 @@ export function CategoryList({
             ))}
           </div>
         </section>
+      ) : null}
+      {totalPages > 1 ? (
+        <nav
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-white p-3"
+          aria-label="Paginação das categorias"
+        >
+          <button
+            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-line bg-white px-3 text-sm font-bold text-ink hover:bg-plum-soft disabled:cursor-not-allowed disabled:opacity-50"
+            type="button"
+            onClick={() => setCurrentPage(visiblePage - 1)}
+            disabled={visiblePage === 1}
+          >
+            Anterior
+          </button>
+          <span
+            className="text-sm font-bold text-muted"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            Página {visiblePage} de {totalPages}
+          </span>
+          <button
+            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-line bg-white px-3 text-sm font-bold text-ink hover:bg-plum-soft disabled:cursor-not-allowed disabled:opacity-50"
+            type="button"
+            onClick={() => setCurrentPage(visiblePage + 1)}
+            disabled={visiblePage === totalPages}
+          >
+            Próxima
+          </button>
+        </nav>
       ) : null}
     </div>
   );
