@@ -30,9 +30,12 @@ export function MenuCatalog({
   );
   const [search, setSearch] = useState("");
   const normalizedSearch = normalizeSearchText(search.trim());
-  const visibleCategories = selectedCategoryId
-    ? categories.filter((category) => category.id === selectedCategoryId)
-    : categories;
+  const selectedCategory = categories.find(
+    (category) => category.id === selectedCategoryId,
+  );
+  const categoryNames = new Map(
+    categories.map((category) => [category.id, category.name]),
+  );
   const visibleProducts = products.filter((product) => {
     const matchesCategory =
       selectedCategoryId === null ||
@@ -103,6 +106,19 @@ export function MenuCatalog({
             ))}
           </nav>
 
+          {selectedCategory ? (
+            <div className="mt-2 border-b border-[#efe8de] pb-2">
+              <h3 className="m-0 font-serif text-xl tracking-[-0.025em] text-plum-dark max-sm:text-lg">
+                {selectedCategory.name}
+              </h3>
+              {selectedCategory.description ? (
+                <p className="mt-1 mb-0 text-base leading-relaxed text-muted max-sm:text-sm">
+                  {selectedCategory.description}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+
           {visibleProducts.length === 0 ? (
             <div
               className="mt-3 grid min-h-[150px] content-center justify-items-center rounded-2xl border border-dashed border-[#d9c9b3] bg-cream p-5 text-center max-sm:mt-2.5 max-sm:min-h-[135px] max-sm:rounded-xl max-sm:p-4"
@@ -125,52 +141,14 @@ export function MenuCatalog({
             </div>
           ) : (
             <div className="mt-2 max-h-[min(58svh,42rem)] min-h-[10rem] overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable] max-sm:max-h-[45svh]">
-              <div className="grid gap-5 max-sm:gap-4">
-                {visibleCategories.map((category) => {
-                  const categoryProducts = visibleProducts.filter(
-                    (product) => product.category_id === category.id,
-                  );
-
-                  if (normalizedSearch && categoryProducts.length === 0) {
-                    return null;
-                  }
-
-                  return (
-                    <section
-                      className="scroll-mt-6"
-                      id={`category-${category.id}`}
-                      key={category.id}
-                      aria-labelledby={`category-title-${category.id}`}
-                    >
-                      <div className="mt-3 mb-2 flex items-start justify-between gap-3 border-b border-[#efe8de] pb-2">
-                        <div>
-                          <h3
-                            className="m-0 font-serif text-xl tracking-[-0.025em] text-plum-dark max-sm:text-lg"
-                            id={`category-title-${category.id}`}
-                          >
-                            {category.name}
-                          </h3>
-                          {category.description ? (
-                            <p className="mt-1 mb-0 text-base leading-relaxed text-muted max-sm:text-sm">
-                              {category.description}
-                            </p>
-                          ) : null}
-                        </div>
-                      </div>
-                      {categoryProducts.length > 0 ? (
-                        <div className="mt-2 grid gap-2.5 max-sm:gap-2">
-                          {categoryProducts.map((product) => (
-                            <MenuProductCard key={product.id} product={product} />
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="m-0 max-w-[42ch] rounded-xl bg-cream p-3 text-sm leading-relaxed text-muted">
-                          Ainda não há produtos publicados nesta categoria.
-                        </p>
-                      )}
-                    </section>
-                  );
-                })}
+              <div className="grid gap-2.5 max-sm:gap-2">
+                {visibleProducts.map((product) => (
+                  <MenuProductCard
+                    key={product.id}
+                    product={product}
+                    categoryName={categoryNames.get(product.category_id)}
+                  />
+                ))}
               </div>
             </div>
           )}
