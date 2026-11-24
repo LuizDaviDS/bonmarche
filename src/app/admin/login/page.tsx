@@ -9,7 +9,7 @@ export default async function AdminLoginPage() {
   }
 
   return (
-    <AccessShell headerLabel="Entrar">
+    <AccessShell>
       <main className="mx-auto mt-6 mb-10 grid w-[calc(100%-40px)] max-w-[980px] grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-start gap-4 max-sm:w-[calc(100%-32px)] max-sm:grid-cols-1">
         <section className="grid min-h-[116px] grid-cols-2 gap-2 overflow-hidden rounded-2xl border border-plum-dark bg-[linear-gradient(115deg,#421450,#702783_70%,#87508b)] p-4 text-white max-sm:min-h-0 max-sm:grid-cols-1 max-sm:gap-2.5" aria-labelledby="login-title">
           <div className="flex flex-col items-start gap-1">
