@@ -201,9 +201,6 @@ export default async function Home() {
 							{store.name}
 						</span>
 					</div>
-					<span className="text-base font-bold text-muted max-sm:text-xs">
-						Opções
-					</span>
 				</div>
 			</header>
 
