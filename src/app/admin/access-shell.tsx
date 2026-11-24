@@ -2,10 +2,8 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 
 export function AccessShell({
-  headerLabel,
   children,
 }: {
-  headerLabel: string;
   children: ReactNode;
 }) {
   return (
@@ -22,7 +20,6 @@ export function AccessShell({
           />
           <span className="font-serif text-base font-extrabold text-plum-dark">Bonmarché</span>
         </div>
-        <span className="text-sm font-bold text-muted max-sm:text-xs">{headerLabel}</span>
       </header>
       {children}
     </div>

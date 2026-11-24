@@ -125,7 +125,7 @@ export function MenuCatalog({
               </p>
             </div>
           ) : (
-            <div className="mt-2 max-h-[min(58svh,42rem)] min-h-[10rem] overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable] max-sm:max-h-[45svh]">
+            <div className="mt-2 max-h-[min(58svh,42rem)] min-h-[10rem] overflow-y-auto pr-1 [scrollbar-gutter:stable] max-[800px]:max-h-none max-[800px]:overflow-y-visible">
               <div className="grid gap-5 max-sm:gap-4">
                 {visibleCategories.map((category) => {
                   const categoryProducts = visibleProducts.filter(

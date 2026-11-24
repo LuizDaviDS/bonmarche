@@ -98,7 +98,7 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <AccessShell headerLabel="Redefinir senha">
+    <AccessShell>
       <main className="mx-auto mt-6 mb-10 w-[min(480px,calc(100%-40px))] pt-4.5 max-sm:mt-4.5 max-sm:w-[calc(100%-32px)] max-sm:pt-3">
         <h1 className="mb-2 mt-0 text-center font-serif text-2xl tracking-[-0.02em] text-ink max-sm:text-xl">
           Redefinir senha
